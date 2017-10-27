@@ -61,6 +61,31 @@ void combination_generator_util_Unique(int i, int pendingSum, vector<int> &curr_
 	}
 }
 
+void combination_generator_util_Unique_2(int i, int pendingSum, vector<int> &curr_sol, vector<vector<int> > &sol_set, vector<int> &A)
+{
+	if (pendingSum == 0)
+	{
+		//We have found the required combination...add it to sol_set
+		sol_set.push_back(curr_sol);
+		return;
+	}
+	//consider the ith element
+	if (i == A.size() || pendingSum < 0) //No more element left for consideration
+	{
+		return;
+	}
+	//Take the ith element
+	curr_sol.push_back(A[i]);
+	combination_generator_util_Unique_2(i + 1, pendingSum - A[i], curr_sol, sol_set, A);
+	//Or don't consider ith element
+	curr_sol.pop_back();
+
+	//Avoid duplicate
+	while (i < A.size() - 1 && A[i + 1] == A[i]) {i++; }
+	combination_generator_util_Unique_2(i + 1, pendingSum, curr_sol, sol_set, A);
+	
+}
+
 void combination_generator_util(int i, int pendingSum, vector<int> &curr_sol, vector<vector<int> > &sol_set, vector<int> &A)
 {
 	if (pendingSum == 0)
@@ -108,8 +133,18 @@ void generate_combintaion_2(vector<int> &A, int TargetSum, vector<vector<int> > 
 	combination_generator_util_Unique(0, TargetSum, curr_sol, sol_set, A);
 }
 
+void generate_combintaion_Unique2(vector<int> &A, int TargetSum, vector<vector<int> > &sol_set)
+{
+	sort(A.begin(), A.end());
+	vector<int> curr_sol;
+
+	combination_generator_util_Unique_2(0, TargetSum, curr_sol, sol_set, A);
+}
+
 void print_solution(vector<vector<int> > &sol_set)
 {
+	sort(sol_set.begin(), sol_set.end());
+
 	for (int i = 0; i < sol_set.size(); i++)
 	{
 		cout << "{";
@@ -133,7 +168,7 @@ int main()
 	int T; //target sum
 	cin >> T;
 
-	vector<vector<int> > sol_set, sol_set2;
+	vector<vector<int> > sol_set, sol_set2, sol_set3;
 	generate_combintaion(A, T, sol_set);
 
 	print_solution(sol_set);
@@ -141,6 +176,10 @@ int main()
 	cout << "ALL UNIQUE COMBO" << endl;
 	generate_combintaion_2(A, T, sol_set2);
 	print_solution(sol_set2);
+
+	cout << "ALL UNIQUE COMBO-2" << endl;
+	generate_combintaion_Unique2(A, T, sol_set3);
+	print_solution(sol_set3);
 	
     return 0;
 }
